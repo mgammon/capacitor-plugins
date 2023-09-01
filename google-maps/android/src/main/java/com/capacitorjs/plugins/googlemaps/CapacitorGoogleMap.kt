@@ -773,6 +773,11 @@ class CapacitorGoogleMap(
         markerOptions.draggable(marker.draggable)
         markerOptions.zIndex(marker.zIndex)
 
+        val anchor = marker.iconAnchor
+        if (anchor != null) {
+            markerOptions.anchor(anchor.x, anchor.y)
+        }
+
         if (!marker.iconUrl.isNullOrEmpty()) {
             if (this.markerIcons.contains(marker.iconUrl)) {
                 val cachedBitmap = this.markerIcons[marker.iconUrl]
