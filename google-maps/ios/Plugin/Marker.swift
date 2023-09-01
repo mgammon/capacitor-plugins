@@ -1,5 +1,6 @@
 import Foundation
 import Capacitor
+import CoreLocation
 
 public struct Marker {
     let coordinate: LatLng
@@ -13,6 +14,7 @@ public struct Marker {
     let draggable: Bool?
     let color: UIColor?
     let zIndex: Int32
+    let rotation: CLLocationDegrees?
 
     init(fromJSObject: JSObject) throws {
         guard let latLngObj = fromJSObject["coordinate"] as? JSObject else {
@@ -64,6 +66,7 @@ public struct Marker {
         self.iconAnchor = iconAnchor
         self.color = tintColor
         self.zIndex = Int32((fromJSObject["zIndex"] as? Int) ?? 0)
+        self.rotation = fromJSObject["rotation"] as? CLLocationDegrees
     }
 }
 

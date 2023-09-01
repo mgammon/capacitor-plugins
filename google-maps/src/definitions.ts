@@ -331,6 +331,14 @@ export interface Marker {
    * @since 4.2.0
    */
   iconAnchor?: Point;
+
+  /**
+   * The rotation of the marker in degrees clockwise about the marker's anchor point.  Rotation is not implemented on web.
+   *
+   * @since fork
+   */
+  rotation?: number;
+
   /**
    * Customizes the color of the default marker image.  Each value must be between 0 and 255.
    *

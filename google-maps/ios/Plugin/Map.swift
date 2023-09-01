@@ -604,6 +604,8 @@ public class Map {
         newMarker.opacity = marker.opacity ?? 1
         newMarker.isDraggable = marker.draggable ?? false
         newMarker.zIndex = marker.zIndex
+        newMarker.rotation = marker.rotation ?? 0
+        
         if let iconAnchor = marker.iconAnchor {
             newMarker.groundAnchor = iconAnchor
         }

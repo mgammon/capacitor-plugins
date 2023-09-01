@@ -22,6 +22,7 @@ class CapacitorGoogleMapMarker(fromJSONObject: JSONObject): ClusterItem {
     var googleMapMarker: Marker? = null
     var colorHue: Float? = null
     var markerOptions: MarkerOptions? = null
+    var rotation: Float = 0.0f
 
     init {
         if (!fromJSONObject.has("coordinate")) {
@@ -64,6 +65,7 @@ class CapacitorGoogleMapMarker(fromJSONObject: JSONObject): ClusterItem {
 
         draggable = fromJSONObject.optBoolean("draggable", false)
         zIndex = fromJSONObject.optLong("zIndex").toFloat()
+        rotation = fromJSONObject.optDouble("rotation", 1.0).toFloat()
     }
 
     override fun getPosition(): LatLng {

@@ -772,6 +772,7 @@ class CapacitorGoogleMap(
         markerOptions.flat(marker.isFlat)
         markerOptions.draggable(marker.draggable)
         markerOptions.zIndex(marker.zIndex)
+        markerOptions.rotation(marker.rotation)
 
         val anchor = marker.iconAnchor
         if (anchor != null) {
