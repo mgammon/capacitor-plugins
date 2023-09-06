@@ -640,6 +640,14 @@ public class Map {
                             newMarker.icon = getResizedIcon(iconImage, marker)
                         }
                     }
+                } else if iconUrl.starts(with: "data:") {
+                    DispatchQueue.main.async {
+                        let base64String = iconUrl.split(separator: ",").map(String.init)[1]
+                        if let data = Data(base64Encoded: base64String), let iconImage = UIImage(data: data) {
+                            self.markerIcons[iconUrl] = iconImage
+                            newMarker.icon = getResizedIcon(iconImage, marker)
+                        }
+                    }
                 } else if let iconImage = UIImage(named: "public/\(iconUrl)") {
                     self.markerIcons[iconUrl] = iconImage
                     newMarker.icon = getResizedIcon(iconImage, marker)
