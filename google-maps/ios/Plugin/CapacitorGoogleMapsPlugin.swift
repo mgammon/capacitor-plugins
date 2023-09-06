@@ -18,8 +18,8 @@ extension GMSMapViewType {
         case "None":
             return .none
         default:
-            print("CapacitorGoogleMaps Warning: unknown mapView type '\(mapType)'.  Defaulting to normal.")
-            return .normal
+            print("CapacitorGoogleMaps Warning: unknown mapView type '\(mapType)'.  Defaulting to none.")
+            return .none
         }
     }
     static func toString(mapType: GMSMapViewType) -> String {
@@ -35,7 +35,7 @@ extension GMSMapViewType {
         case .none:
             return "None"
         default:
-            return "Normal"
+            return "None"
         }
     }
 }
@@ -571,7 +571,7 @@ public class CapacitorGoogleMapsPlugin: CAPPlugin, GMSMapViewDelegate {
 
             let mapType = GMSMapViewType.fromString(mapType: mapTypeString)
 
-            try map.setMapType(mapType: mapType)
+            try map.setMapType(mapType: mapType, mapTypeString: mapTypeString)
 
             call.resolve()
         } catch {

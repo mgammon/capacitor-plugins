@@ -19,6 +19,7 @@ import com.google.maps.android.clustering.ClusterManager
 import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.Channel
 import java.io.InputStream
+import java.net.MalformedURLException
 import java.net.URL
 
 
@@ -49,6 +50,9 @@ class CapacitorGoogleMap(
     private val markerIcons = HashMap<String, Bitmap>()
     private var clusterManager: ClusterManager<CapacitorGoogleMapMarker>? = null
 
+    private val customTileProviders = HashMap<String, TileProvider>()
+    private var tileOverlay: TileOverlay? = null
+
     private val isReadyChannel = Channel<Boolean>()
     private var debounceJob: Job? = null
 
@@ -56,6 +60,7 @@ class CapacitorGoogleMap(
         val bridge = delegate.bridge
 
         mapView = MapView(bridge.context, config.googleMapOptions)
+        initCustomTileProviders()
         initMap()
         setListeners()
     }
@@ -74,6 +79,32 @@ class CapacitorGoogleMap(
                     }
 
             job.join()
+        }
+    }
+
+    private fun initCustomTileProviders() {
+        config.customMapTypes.forEach { (id, url) ->
+            val tileProvider = object : UrlTileProvider(256, 256) {
+                override fun getTileUrl(x: Int, y: Int, z: Int): URL? {
+
+                    val formattedUrl = url.replace("{x}", x.toString()).replace("{y}", y.toString()).replace("{z}", z.toString())
+                    return if (!checkTileExists(z)) {
+                        null
+                    } else try {
+                        URL(formattedUrl)
+                    } catch (e: MalformedURLException) {
+                        throw AssertionError(e)
+                    }
+                }
+                // TODO:  Optionally pass in minZoom and maxZoom
+                // Check if the zoom level is supported by the tile provider
+                private fun checkTileExists(z: Int): Boolean {
+                    val minZoom = 0
+                    val maxZoom = 20
+                    return z in minZoom..maxZoom
+                }
+            }
+            customTileProviders[id] = tileProvider
         }
     }
 
@@ -587,6 +618,7 @@ class CapacitorGoogleMap(
         try {
             googleMap ?: throw GoogleMapNotAvailable()
             CoroutineScope(Dispatchers.Main).launch {
+                val matchingCustomTileProvider = customTileProviders[mapType]
                 val mapTypeInt: Int =
                         when (mapType) {
                             "Normal" -> MAP_TYPE_NORMAL
@@ -595,13 +627,27 @@ class CapacitorGoogleMap(
                             "Terrain" -> MAP_TYPE_TERRAIN
                             "None" -> MAP_TYPE_NONE
                             else -> {
-                                Log.w(
-                                        "CapacitorGoogleMaps",
-                                        "unknown mapView type '$mapType'  Defaulting to normal."
-                                )
-                                MAP_TYPE_NORMAL
+                                if (matchingCustomTileProvider != null) {
+                                    Log.i("CapacitorGoogleMaps", "Using custom type $mapType")
+                                    MAP_TYPE_NONE
+                                }else {
+                                    Log.w(
+                                            "CapacitorGoogleMaps",
+                                            "unknown mapView type '$mapType'  Defaulting to normal."
+                                    )
+                                    MAP_TYPE_NORMAL
+                                }
                             }
                         }
+
+                tileOverlay?.remove()
+                Log.i("CapacitorGoogleMaps", "$mapType which mapped to ${mapTypeInt.toString()} being used")
+                if (matchingCustomTileProvider != null) {
+                    Log.i("CapacitorGoogleMaps", "Adding custom map!")
+                    tileOverlay = googleMap?.addTileOverlay(TileOverlayOptions().tileProvider(matchingCustomTileProvider))
+                } else {
+                    Log.i("CapacitorGoogleMaps", "No custom map!")
+                }
 
                 googleMap?.mapType = mapTypeInt
                 callback(null)

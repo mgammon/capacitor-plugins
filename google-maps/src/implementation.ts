@@ -3,7 +3,7 @@ import { registerPlugin } from '@capacitor/core';
 
 import type {
   CameraConfig,
-  Circle,
+  Circle, CustomMapType,
   GoogleMapConfig,
   LatLng,
   LatLngBounds,
@@ -109,7 +109,7 @@ export interface CameraArgs {
 
 export interface MapTypeArgs {
   id: string;
-  mapType: MapType;
+  mapType: MapType | CustomMapType;
 }
 
 export interface IndoorMapArgs {

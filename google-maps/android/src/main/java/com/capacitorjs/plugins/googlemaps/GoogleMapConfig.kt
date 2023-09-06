@@ -16,6 +16,7 @@ class GoogleMapConfig(fromJSONObject: JSONObject) {
     var liteMode: Boolean = false
     var devicePixelRatio: Float = 1.00f
     var styles: String? = null
+    var customMapTypes = HashMap<String,String>()
 
     init {
         if (!fromJSONObject.has("width")) {
@@ -65,6 +66,20 @@ class GoogleMapConfig(fromJSONObject: JSONObject) {
                     "LatLng object is missing the required 'lat' and/or 'lng' property"
             )
         }
+
+        if (fromJSONObject.has("customMapTypes")) {
+            val customMapTypesJSONObject = fromJSONObject.getJSONArray("customMapTypes")
+            for (i in 0 until customMapTypesJSONObject.length()) {
+                val customMapType = customMapTypesJSONObject.getJSONObject(i)
+                if (!customMapType.has("id") || !customMapType.has("url")) {
+                    throw InvalidArgumentsError("customMapTypes object is missing the required 'id' or 'url' property")
+                }
+                println(customMapType.getString("url"))
+                customMapTypes[customMapType.getString("id")] = customMapType.getString("url")
+            }
+        }
+
+
 
         liteMode =
                 fromJSONObject.has("androidLiteMode") &&

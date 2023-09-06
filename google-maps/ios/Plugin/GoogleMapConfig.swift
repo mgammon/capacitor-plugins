@@ -1,6 +1,11 @@
 import Foundation
 import Capacitor
 
+struct CustomMapType {
+    var id: String;
+    var url: String;
+}
+
 public struct GoogleMapConfig: Codable {
     let width: Double
     let height: Double
@@ -9,6 +14,7 @@ public struct GoogleMapConfig: Codable {
     let center: LatLng
     let zoom: Double
     let styles: String?
+    var customMapTypes: [String: String] = [:]
 
     init(fromJSObject: JSObject) throws {
         guard let width = fromJSObject["width"] as? Double else {
@@ -49,6 +55,21 @@ public struct GoogleMapConfig: Codable {
             self.styles = String(data: jsonData, encoding: .utf8)
         } else {
             self.styles = nil
+        }
+        
+        // This is super verbose but like, I'm real bad at Swift, and this works.
+        let customMapTypesArray = fromJSObject["customMapTypes"] as? JSArray
+        if customMapTypesArray != nil {
+            for customMapTypeJSObject in customMapTypesArray! {
+                let customMapType = customMapTypeJSObject as? JSObject
+                if (customMapType != nil){
+                    let id = customMapType!["id"] as? String;
+                    let url = customMapType!["url"] as? String;
+                    if (id != nil && url != nil){
+                        self.customMapTypes[id!] = url
+                    }
+                }
+            }
         }
     }
 }

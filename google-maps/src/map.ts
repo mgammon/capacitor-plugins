@@ -18,7 +18,7 @@ import type {
   Circle,
   CircleClickCallbackData,
   Polyline,
-  PolylineCallbackData,
+  PolylineCallbackData, CustomMapType,
 } from './definitions';
 import { LatLngBounds, MapType } from './definitions';
 import type { CreateMapArgs } from './implementation';
@@ -53,8 +53,8 @@ export interface GoogleMapInterface {
   /**
    * Get current map type
    */
-  getMapType(): Promise<MapType>;
-  setMapType(mapType: MapType): Promise<void>;
+  getMapType(): Promise<MapType | CustomMapType>;
+  setMapType(mapType: MapType | CustomMapType): Promise<void>;
   enableIndoorMaps(enabled: boolean): Promise<void>;
   enableTrafficLayer(enabled: boolean): Promise<void>;
   enableAccessibilityElements(enabled: boolean): Promise<void>;
@@ -507,9 +507,9 @@ export class GoogleMap {
     });
   }
 
-  async getMapType(): Promise<MapType> {
+  async getMapType(): Promise<MapType | CustomMapType> {
     const { type } = await CapacitorGoogleMaps.getMapType({ id: this.id });
-    return MapType[type as keyof typeof MapType];
+    return MapType[type as keyof typeof MapType] ?? type as CustomMapType;
   }
 
   /**
@@ -518,7 +518,7 @@ export class GoogleMap {
    * @param mapType
    * @returns
    */
-  async setMapType(mapType: MapType): Promise<void> {
+  async setMapType(mapType: MapType | CustomMapType): Promise<void> {
     return CapacitorGoogleMaps.setMapType({
       id: this.id,
       mapType,

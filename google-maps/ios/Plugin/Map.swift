@@ -72,7 +72,9 @@ public class Map {
     var circles = [Int: GMSCircle]()
     var polylines = [Int: GMSPolyline]()
     var markerIcons = [String: UIImage]()
-
+    var customTileLayers = [String: GMSTileLayer]()
+    var currentTileLayer: GMSTileLayer?
+    
     // swiftlint:disable identifier_name
     public static let MAP_TAG = 99999
     // swiftlint:enable identifier_name
@@ -85,8 +87,19 @@ public class Map {
         self.config = config
         self.delegate = delegate
         self.mapViewController = GMViewController()
-
+        self.initCustomTileLayers()
+        
         self.render()
+    }
+    
+    private func initCustomTileLayers(){
+        for (id, url) in config.customMapTypes {
+            var urlConstructor: GMSTileURLConstructor = { (x, y, z) in
+                let formattedUrl = url.replacingOccurrences(of: "{x}", with: String(x)).replacingOccurrences(of: "{y}", with: String(y)).replacingOccurrences(of: "{z}", with: String(z))
+                return URL(string: formattedUrl)
+              }
+            self.customTileLayers[id] = GMSURLTileLayer(urlConstructor: urlConstructor)
+        }
     }
 
     func render() {
@@ -423,9 +436,14 @@ public class Map {
         return self.mapViewController.GMapView.mapType
     }
 
-    func setMapType(mapType: GMSMapViewType) throws {
+    func setMapType(mapType: GMSMapViewType, mapTypeString: String) throws {
         DispatchQueue.main.sync {
             self.mapViewController.GMapView.mapType = mapType
+            // Remove any existing tile layer and add the new one
+            print("adding tile layer", mapType, mapTypeString)
+            self.currentTileLayer?.map = nil
+            self.currentTileLayer = self.customTileLayers[mapTypeString]
+            self.currentTileLayer?.map = self.mapViewController.GMapView
         }
     }
 

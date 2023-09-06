@@ -191,6 +191,8 @@ export interface GoogleMapConfig extends google.maps.MapOptions {
    * @since 4.3.0
    */
   styles?: google.maps.MapTypeStyle[] | null;
+
+  customMapTypes?: {id: CustomMapType, url: string}[]
 }
 
 /**
@@ -254,6 +256,8 @@ export enum MapType {
    */
   None = 'None',
 }
+
+export type CustomMapType = string;
 
 /**
  * Controls for setting padding on the 'visible' region of the view.
