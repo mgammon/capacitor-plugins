@@ -15,6 +15,7 @@ public struct Marker {
     let color: UIColor?
     let zIndex: Int32
     let rotation: CLLocationDegrees?
+    let disableAutoPan: Bool?;
 
     init(fromJSObject: JSObject) throws {
         guard let latLngObj = fromJSObject["coordinate"] as? JSObject else {
@@ -67,6 +68,7 @@ public struct Marker {
         self.color = tintColor
         self.zIndex = Int32((fromJSObject["zIndex"] as? Int) ?? 0)
         self.rotation = fromJSObject["rotation"] as? CLLocationDegrees
+        self.disableAutoPan = fromJSObject["disableAutoPan"] as? Bool
     }
 }
 

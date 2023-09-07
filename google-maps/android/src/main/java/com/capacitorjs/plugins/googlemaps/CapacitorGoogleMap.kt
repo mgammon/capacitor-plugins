@@ -19,6 +19,7 @@ import com.google.maps.android.clustering.Cluster
 import com.google.maps.android.clustering.ClusterManager
 import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.Channel
+import org.json.JSONObject
 import java.io.ByteArrayInputStream
 import java.io.InputStream
 import java.net.MalformedURLException
@@ -1012,6 +1013,25 @@ class CapacitorGoogleMap(
         data.put("title", marker.title)
         data.put("snippet", marker.snippet)
         delegate.notify("onMarkerClick", data)
+
+        // Disable default behavior (show window + auto pan) if auto-pan is disabled
+        val capacitorMarker = markers[marker.id]
+        if (capacitorMarker != null && capacitorMarker.disableAutoPan) {
+            CoroutineScope(Dispatchers.Main).launch {
+                if (!marker.isInfoWindowShown) {
+                    marker.showInfoWindow();
+                }
+                // Dumb, but fake moving the camera so it sets the right info window anchor
+                var config: GoogleMapCameraConfig = GoogleMapCameraConfig(JSONObject())
+                setCamera(config){ err ->
+                    if (err != null) {
+                        throw err
+                    }
+                }
+
+            }
+            return true
+        }
         return false
     }
 

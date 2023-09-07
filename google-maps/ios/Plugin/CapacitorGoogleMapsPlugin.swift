@@ -1061,6 +1061,11 @@ public class CapacitorGoogleMapsPlugin: CAPPlugin, GMSMapViewDelegate {
                 "title": marker.title ?? "",
                 "snippet": marker.snippet ?? ""
             ])
+            let userData = marker.userData as? [String: Any]
+            if (userData?["disableAutoPan"] as? Bool == true){
+                mapView.selectedMarker = marker;
+                return true;
+            }
         }
         return false
     }

@@ -623,6 +623,7 @@ public class Map {
         newMarker.isDraggable = marker.draggable ?? false
         newMarker.zIndex = marker.zIndex
         newMarker.rotation = marker.rotation ?? 0
+        newMarker.userData = ["disableAutoPan": marker.disableAutoPan]
         
         if let iconAnchor = marker.iconAnchor {
             newMarker.groundAnchor = iconAnchor

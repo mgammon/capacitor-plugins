@@ -371,6 +371,13 @@ export interface Marker {
    * @default 0
    */
   zIndex?: number;
+
+  /**
+   * Controls whether this selecting this marker automatically pans to its location
+   *
+   * @default false
+   */
+  disableAutoPan?: boolean;
 }
 
 /**
