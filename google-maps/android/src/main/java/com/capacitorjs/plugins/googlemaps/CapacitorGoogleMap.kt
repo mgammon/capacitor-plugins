@@ -1021,14 +1021,6 @@ class CapacitorGoogleMap(
                 if (!marker.isInfoWindowShown) {
                     marker.showInfoWindow();
                 }
-                // Dumb, but fake moving the camera so it sets the right info window anchor
-                var config: GoogleMapCameraConfig = GoogleMapCameraConfig(JSONObject())
-                setCamera(config){ err ->
-                    if (err != null) {
-                        throw err
-                    }
-                }
-
             }
             return true
         }
