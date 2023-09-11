@@ -38,6 +38,7 @@ class CapacitorGoogleMap(
         OnMyLocationClickListener,
         OnMapReadyCallback,
         OnMapClickListener,
+        OnMapLongClickListener,
         OnMarkerClickListener,
         OnMarkerDragListener,
         OnInfoWindowClickListener,
@@ -933,6 +934,7 @@ class CapacitorGoogleMap(
             this@CapacitorGoogleMap.googleMap?.setOnCircleClickListener(this@CapacitorGoogleMap)
             this@CapacitorGoogleMap.googleMap?.setOnMarkerDragListener(this@CapacitorGoogleMap)
             this@CapacitorGoogleMap.googleMap?.setOnMapClickListener(this@CapacitorGoogleMap)
+            this@CapacitorGoogleMap.googleMap?.setOnMapLongClickListener(this@CapacitorGoogleMap)
             this@CapacitorGoogleMap.googleMap?.setOnMyLocationButtonClickListener(
                     this@CapacitorGoogleMap
             )
@@ -1002,6 +1004,14 @@ class CapacitorGoogleMap(
         data.put("latitude", point.latitude)
         data.put("longitude", point.longitude)
         delegate.notify("onMapClick", data)
+    }
+
+    override fun onMapLongClick(point: LatLng) {
+        val data = JSObject()
+        data.put("mapId", this@CapacitorGoogleMap.id)
+        data.put("latitude", point.latitude)
+        data.put("longitude", point.longitude)
+        delegate.notify("onMapLongClick", data)
     }
 
     override fun onMarkerClick(marker: Marker): Boolean {

@@ -999,6 +999,15 @@ public class CapacitorGoogleMapsPlugin: CAPPlugin, GMSMapViewDelegate {
             "longitude": coordinate.longitude
         ])
     }
+    
+    // onMapLongClick
+    public func mapView(_ mapView: GMSMapView, didLongPressAt coordinate: CLLocationCoordinate2D) {
+        self.notifyListeners("onMapLongClick", data: [
+            "mapId": self.findMapIdByMapView(mapView),
+            "latitude": coordinate.latitude,
+            "longitude": coordinate.longitude
+        ])
+    }
 
     // onPolygonClick, onPolylineClick, onCircleClick
     public func mapView(_ mapView: GMSMapView, didTap overlay: GMSOverlay) {

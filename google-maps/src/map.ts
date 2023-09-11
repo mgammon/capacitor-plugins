@@ -87,6 +87,9 @@ export interface GoogleMapInterface {
   setOnMapClickListener(
     callback?: MapListenerCallback<MapClickCallbackData>,
   ): Promise<void>;
+  setOnMapLongClickListener(
+    callback?: MapListenerCallback<MapClickCallbackData>,
+  ): Promise<void>;
   setOnMarkerClickListener(
     callback?: MapListenerCallback<MarkerClickCallbackData>,
   ): Promise<void>;
@@ -150,6 +153,7 @@ export class GoogleMap {
   private onClusterInfoWindowClickListener?: PluginListenerHandle;
   private onInfoWindowClickListener?: PluginListenerHandle;
   private onMapClickListener?: PluginListenerHandle;
+  private onMapLongClickListener?: PluginListenerHandle;
   private onPolylineClickListener?: PluginListenerHandle;
   private onMarkerClickListener?: PluginListenerHandle;
   private onPolygonClickListener?: PluginListenerHandle;
@@ -849,6 +853,29 @@ export class GoogleMap {
     }
   }
 
+    /**
+   * Set the event listener on the map for 'onMapLongClick' events.
+   *
+   * @param callback
+   * @returns
+   */
+    async setOnMapLongClickListener(
+      callback?: MapListenerCallback<MapClickCallbackData>,
+    ): Promise<void> {
+      if (this.onMapLongClickListener) {
+        this.onMapLongClickListener.remove();
+      }
+  
+      if (callback) {
+        this.onMapLongClickListener = await CapacitorGoogleMaps.addListener(
+          'onMapLongClick',
+          this.generateCallback(callback),
+        );
+      } else {
+        this.onMapLongClickListener = undefined;
+      }
+    }
+
   /**
    * Set the event listener on the map for 'onPolygonClick' events.
    *
@@ -1092,6 +1119,11 @@ export class GoogleMap {
     if (this.onMapClickListener) {
       this.onMapClickListener.remove();
       this.onMapClickListener = undefined;
+    }
+
+    if (this.onMapLongClickListener) {
+      this.onMapLongClickListener.remove();
+      this.onMapLongClickListener = undefined;
     }
 
     if (this.onPolylineClickListener) {

@@ -314,6 +314,7 @@ export default MyMap;
 * [`setOnClusterInfoWindowClickListener(...)`](#setonclusterinfowindowclicklistener)
 * [`setOnInfoWindowClickListener(...)`](#setoninfowindowclicklistener)
 * [`setOnMapClickListener(...)`](#setonmapclicklistener)
+* [`setOnMapLongClickListener(...)`](#setonmaplongclicklistener)
 * [`setOnMarkerClickListener(...)`](#setonmarkerclicklistener)
 * [`setOnPolygonClickListener(...)`](#setonpolygonclicklistener)
 * [`setOnCircleClickListener(...)`](#setoncircleclicklistener)
@@ -739,6 +740,19 @@ setOnInfoWindowClickListener(callback?: MapListenerCallback<MarkerClickCallbackD
 
 ```typescript
 setOnMapClickListener(callback?: MapListenerCallback<MapClickCallbackData> | undefined) => Promise<void>
+```
+
+| Param          | Type                                                                                                                                |
+| -------------- | ----------------------------------------------------------------------------------------------------------------------------------- |
+| **`callback`** | <code><a href="#maplistenercallback">MapListenerCallback</a>&lt;<a href="#mapclickcallbackdata">MapClickCallbackData</a>&gt;</code> |
+
+--------------------
+
+
+### setOnMapLongClickListener(...)
+
+```typescript
+setOnMapLongClickListener(callback?: MapListenerCallback<MapClickCallbackData> | undefined) => Promise<void>
 ```
 
 | Param          | Type                                                                                                                                |
