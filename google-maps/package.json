@@ -1,6 +1,6 @@
 {
-  "name": "@capacitor/google-maps",
-  "version": "5.3.0",
+  "name": "@mgammon/google-maps",
+  "version": "5.3.2",
   "description": "Google maps on Capacitor",
   "main": "dist/plugin.cjs.js",
   "module": "dist/esm/index.js",
@@ -18,7 +18,7 @@
     "android/build.gradle",
     "dist/",
     "ios/Plugin/",
-    "CapacitorGoogleMaps.podspec"
+    "MgammonGoogleMaps.podspec"
   ],
   "author": "Ionic <hi@ionicframework.com>",
   "license": "MIT",
@@ -49,7 +49,7 @@
     "clean": "rimraf ./dist",
     "watch": "tsc --watch",
     "prepublishOnly": "npm run build",
-    "publish:cocoapod": "pod trunk push ./CapacitorGoogleMaps.podspec --allow-warnings",
+    "publish:cocoapod": "pod trunk push ./MgammonGoogleMaps.podspec --allow-warnings",
     "downlevel-dts": "npx downlevel-dts dist/typings dist/typings/ts_old --to=3.5",
     "pack-local": "npm run build && npm pack && find . -name 'capacitor-google-maps-*tgz' -exec bash -c 'mv $0 capacitor-google-maps.tgz' {} \\; ",
     "unittest:ios": "xcodebuild test -project ./unit-tests/ios/GoogleMapsPlugin/GoogleMapsPlugin.xcodeproj -scheme TestApp -destination 'platform=iOS Simulator,name=iPhone 12,OS=15.2' | xcpretty && exit ${PIPESTATUS[0]}",
@@ -88,9 +88,6 @@
     "android": {
       "src": "android"
     }
-  },
-  "publishConfig": {
-    "access": "public"
   },
   "dependencies": {
     "@googlemaps/js-api-loader": "~1.13.7",
