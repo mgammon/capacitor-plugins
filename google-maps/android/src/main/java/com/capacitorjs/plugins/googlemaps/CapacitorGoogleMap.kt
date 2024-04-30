@@ -50,12 +50,12 @@ class CapacitorGoogleMap(
     private val markers = HashMap<String, CapacitorGoogleMapMarker>()
     private val polygons = HashMap<String, CapacitorGoogleMapsPolygon>()
     private val circles = HashMap<String, CapacitorGoogleMapsCircle>()
-    private val polylines = HashMap<String, CapacitorGoogleMapPolyline>()        
+    private val polylines = HashMap<String, CapacitorGoogleMapPolyline>()
     private val markerIcons = HashMap<String, Bitmap>()
     private var clusterManager: ClusterManager<CapacitorGoogleMapMarker>? = null
 
     private val customTileProviders = HashMap<String, TileProvider>()
-    private var tileOverlay: TileOverlay? = null
+    private var tileOverlays: ArrayList<TileOverlay> = ArrayList()
 
     private val isReadyChannel = Channel<Boolean>()
     private var debounceJob: Job? = null
@@ -345,7 +345,7 @@ class CapacitorGoogleMap(
                     }
                     val googleMapPolyline = googleMap?.addPolyline(polylineOptions.await())
                     googleMapPolyline?.tag = it.tag
-                    
+
                     it.googleMapsPolyline = googleMapPolyline
 
                     polylines[googleMapPolyline!!.id] = it
@@ -361,10 +361,10 @@ class CapacitorGoogleMap(
 
     private fun setClusterManagerRenderer(minClusterSize: Int?) {
         clusterManager?.renderer = CapacitorClusterManagerRenderer(
-            delegate.bridge.context,
-            googleMap,
-            clusterManager,
-            minClusterSize
+                delegate.bridge.context,
+                googleMap,
+                clusterManager,
+                minClusterSize
         )
     }
 
@@ -622,7 +622,9 @@ class CapacitorGoogleMap(
         try {
             googleMap ?: throw GoogleMapNotAvailable()
             CoroutineScope(Dispatchers.Main).launch {
-                val matchingCustomTileProvider = customTileProviders[mapType]
+                val mapTypes = mapType.split(',');
+                val customTileProviders = mapTypes.map { type -> customTileProviders[type] }
+                val allMapTypesMatchCustomTileProvider = customTileProviders.all { provider -> provider != null };
                 val mapTypeInt: Int =
                         when (mapType) {
                             "Normal" -> MAP_TYPE_NORMAL
@@ -631,7 +633,7 @@ class CapacitorGoogleMap(
                             "Terrain" -> MAP_TYPE_TERRAIN
                             "None" -> MAP_TYPE_NONE
                             else -> {
-                                if (matchingCustomTileProvider != null) {
+                                if (allMapTypesMatchCustomTileProvider) {
                                     Log.i("CapacitorGoogleMaps", "Using custom type $mapType")
                                     MAP_TYPE_NONE
                                 }else {
@@ -644,11 +646,23 @@ class CapacitorGoogleMap(
                             }
                         }
 
-                tileOverlay?.remove()
+                // Remove all tile overlays from the map and our list of tile overlays
+                tileOverlays.forEach { tileOverlay -> tileOverlay.remove() }
+                tileOverlays.clear()
                 Log.i("CapacitorGoogleMaps", "$mapType which mapped to ${mapTypeInt.toString()} being used")
-                if (matchingCustomTileProvider != null) {
+
+                // Add the new custom tile overlays to the map, and to our list of tile overlays
+                if (allMapTypesMatchCustomTileProvider) {
                     Log.i("CapacitorGoogleMaps", "Adding custom map!")
-                    tileOverlay = googleMap?.addTileOverlay(TileOverlayOptions().tileProvider(matchingCustomTileProvider))
+                    customTileProviders.forEachIndexed{ index, customTileProvider ->
+                        if (customTileProvider != null) {
+                            val tileOverlay = googleMap?.addTileOverlay(TileOverlayOptions().tileProvider(customTileProvider))
+                            if (tileOverlay != null) {
+                                tileOverlay.zIndex = index.toFloat();
+                                tileOverlays.add(tileOverlay)
+                            }
+                        }
+                    }
                 } else {
                     Log.i("CapacitorGoogleMaps", "No custom map!")
                 }
@@ -789,7 +803,7 @@ class CapacitorGoogleMap(
 
         return polygonOptions
     }
-    
+
     private fun buildPolyline(line: CapacitorGoogleMapPolyline): PolylineOptions {
         val polylineOptions = PolylineOptions()
         polylineOptions.width(line.strokeWidth * this.config.devicePixelRatio)
